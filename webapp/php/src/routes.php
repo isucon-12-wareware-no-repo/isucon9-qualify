@@ -3,7 +3,7 @@
 use Slim\App;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
-use Slim\Http\StatusCode;
+use App\Polyfill\StatusCode;
 
 return function (App $app) {
     $container = $app->getContainer();

@@ -7,7 +7,6 @@ use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\StatusCode;
 use Slim\Views\PhpRenderer;
 use SlimSession\Helper;
 
@@ -71,7 +70,7 @@ return function (ContainerBuilder $containerBuilder) {
         },
 
         'phpErrorHandler' => function (ContainerInterface $c) {
-            return function (ServerRequestInterface $request, Slim\Http\Response $response, Throwable $exception) use ($c) {
+            return function (ServerRequestInterface $request, App\Polyfill\Response $response, Throwable $exception) use ($c) {
                 /** @var LoggerInterface $logger */
                 $logger = $c['logger'];
                 $logger->critical($exception->getMessage(), ['exception' => (string)$exception]);

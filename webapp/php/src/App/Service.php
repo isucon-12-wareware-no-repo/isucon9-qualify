@@ -3,15 +3,16 @@
 
 namespace App;
 
+use App\Polyfill\Request;
+use App\Polyfill\Response;
+use App\Polyfill\StatusCode;
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Slim\Http\StatusCode;
 
 class Service
 {
@@ -127,7 +128,7 @@ class Service
             return false;
         }
         return [
-          'id' => $user['id'],
+            'id' => $user['id'],
             'account_name' => $user['account_name'],
             'num_sell_items' => $user['num_sell_items'],
         ];
@@ -256,8 +257,8 @@ class Service
                 $r = $sth->execute([
                     self::ITEM_STATUS_ON_SALE,
                     self::ITEM_STATUS_SOLD_OUT,
-                    (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
-                    (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
                     $itemId,
                     self::ITEM_PER_PAGE + 1,
                 ]);
@@ -290,16 +291,16 @@ class Service
                     return $response->withStatus(StatusCode::HTTP_NOT_FOUND)->withJson(['error' => 'category not found']);
                 }
                 $itemSimples[] = [
-                  'id' => (int) $item['id'],
-                  'seller_id' => (int) $item['seller_id'],
-                  'seller' => $seller,
-                  'status' => $item['status'],
-                  'name' => $item['name'],
-                  'price' => (int) $item['price'],
-                  'image_url' => $this->getImageUrl($item['image_name']),
-                  'category_id' => (int) $item['category_id'],
-                  'category' => $category,
-                  'created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
+                    'id' => (int)$item['id'],
+                    'seller_id' => (int)$item['seller_id'],
+                    'seller' => $seller,
+                    'status' => $item['status'],
+                    'name' => $item['name'],
+                    'price' => (int)$item['price'],
+                    'image_url' => $this->getImageUrl($item['image_name']),
+                    'category_id' => (int)$item['category_id'],
+                    'category' => $category,
+                    'created_at' => (new DateTime($item['created_at']))->getTimestamp(),
                 ];
             }
 
@@ -356,8 +357,8 @@ class Service
                     [self::ITEM_STATUS_ON_SALE, self::ITEM_STATUS_SOLD_OUT],
                     $categoryIds,
                     [
-                        (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
-                        (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                        (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                        (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
                         $itemId,
                         self::ITEM_PER_PAGE + 1,
                     ]
@@ -401,7 +402,7 @@ class Service
                     'image_url' => $this->getImageUrl($item['image_name']),
                     'category_id' => $item['category_id'],
                     'category' => $category,
-                    'created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
+                    'created_at' => (new DateTime($item['created_at']))->getTimestamp(),
                 ];
             }
 
@@ -440,14 +441,14 @@ class Service
             if ($itemId !== "" && $createdAt > 0) {
                 // paging
                 $sth = $this->dbh->prepare('SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?,?,?) AND (`created_at` < ? OR (`created_at` <= ? AND `id` < ?)) ' .
-                            'ORDER BY `created_at` DESC, `id` DESC LIMIT ?');
+                    'ORDER BY `created_at` DESC, `id` DESC LIMIT ?');
                 $r = $sth->execute([
                     $user['id'],
                     self::ITEM_STATUS_ON_SALE,
                     self::ITEM_STATUS_TRADING,
                     self::ITEM_STATUS_SOLD_OUT,
-                    (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
-                    (new \DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    (new DateTime())->setTimestamp($createdAt)->format(self::DATETIME_SQL_FORMAT),
                     $itemId,
                     self::ITEM_PER_PAGE + 1,
                 ]);
@@ -491,7 +492,7 @@ class Service
                     'image_url' => $this->getImageUrl($item['image_name']),
                     'category_id' => $item['category_id'],
                     'category' => $category,
-                    'created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
+                    'created_at' => (new DateTime($item['created_at']))->getTimestamp(),
                 ];
             }
 
@@ -536,17 +537,17 @@ class Service
                     '(`seller_id` = ? OR `buyer_id` = ?) AND `status` IN (?,?,?,?,?) AND (`created_at` < ? OR (`created_at` <=? AND `id` < ?)) '.
                     'ORDER BY `created_at` DESC, `id` DESC LIMIT ?');
                 $r = $sth->execute([
-                   $user['id'],
-                   $user['id'],
-                   self::ITEM_STATUS_ON_SALE,
-                   self::ITEM_STATUS_TRADING,
-                   self::ITEM_STATUS_SOLD_OUT,
-                   self::ITEM_STATUS_CANCEL,
-                   self::ITEM_STATUS_STOP,
-                    (new \DateTime())->setTimeStamp((int) $createdAt)->format(self::DATETIME_SQL_FORMAT),
-                    (new \DateTime())->setTimeStamp((int) $createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    $user['id'],
+                    $user['id'],
+                    self::ITEM_STATUS_ON_SALE,
+                    self::ITEM_STATUS_TRADING,
+                    self::ITEM_STATUS_SOLD_OUT,
+                    self::ITEM_STATUS_CANCEL,
+                    self::ITEM_STATUS_STOP,
+                    (new DateTime())->setTimeStamp((int)$createdAt)->format(self::DATETIME_SQL_FORMAT),
+                    (new DateTime())->setTimeStamp((int)$createdAt)->format(self::DATETIME_SQL_FORMAT),
                     $itemId,
-                    self::TRANSACTIONS_PER_PAGE +1,
+                    self::TRANSACTIONS_PER_PAGE + 1,
                 ]);
                 if ($r === false) {
                     throw new \PDOException($sth->errorInfo());
@@ -585,18 +586,18 @@ class Service
                     return $response->withStatus(StatusCode::HTTP_NOT_FOUND)->withJson(['error' => 'seller not found']);
                 }
                 $detail = [
-                        'id' => (int) $item['id'],
-                        'seller_id' => (int) $item['seller_id'],
-                        'seller' => $seller,
-                        'status' => $item['status'],
-                        'name' => $item['name'],
-                        'price' => (int) $item['price'],
-                        'description' => $item['description'],
-                        'image_url' => $this->getImageUrl($item['image_name']),
-                        'category_id' => (int) $item['category_id'],
-                        'category' => $category,
-                        'created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
-                    ];
+                    'id' => (int)$item['id'],
+                    'seller_id' => (int)$item['seller_id'],
+                    'seller' => $seller,
+                    'status' => $item['status'],
+                    'name' => $item['name'],
+                    'price' => (int)$item['price'],
+                    'description' => $item['description'],
+                    'image_url' => $this->getImageUrl($item['image_name']),
+                    'category_id' => (int)$item['category_id'],
+                    'category' => $category,
+                    'created_at' => (new DateTime($item['created_at']))->getTimestamp(),
+                ];
 
                 if ((int) $item['buyer_id'] !== 0) {
                     $buyer = $this->getUserSimpleByID($item['buyer_id']);
@@ -864,7 +865,7 @@ class Service
             return $response->withStatus(StatusCode::HTTP_INTERNAL_SERVER_ERROR)->withJson(['error' => 'db error']);
         }
         unset($item['updated_at']);
-        $item['created_at'] = (new \DateTime($item['created_at']))->getTimestamp();
+        $item['created_at'] = (new DateTime($item['created_at']))->getTimestamp();
         return $response->withStatus(StatusCode::HTTP_OK)->withJson($item);
     }
 
@@ -957,8 +958,8 @@ class Service
 
             $sth = $this->dbh->prepare('UPDATE `users` SET `num_sell_items`=?, `last_bump`=? WHERE `id`=?');
             $r = $sth->execute([
-                $seller['num_sell_items']+1,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                $seller['num_sell_items'] + 1,
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $seller['id']
             ]);
             if ($r === false) {
@@ -1031,7 +1032,7 @@ class Service
             }
 
             $sth = $this->dbh->prepare('UPDATE `items` SET `price` = ?, `updated_at` = ? WHERE `id` = ?');
-            $r = $sth->execute([$payload->item_price, (new \DateTime())->format(self::DATETIME_SQL_FORMAT), $payload->item_id]);
+            $r = $sth->execute([$payload->item_price, (new DateTime())->format(self::DATETIME_SQL_FORMAT), $payload->item_id]);
             if ($r === false) {
                 throw new \PDOException($sth->errorInfo());
             }
@@ -1051,10 +1052,10 @@ class Service
         }
 
         return $response->withStatus(StatusCode::HTTP_OK)->withJson([
-            'item_id' => (int) $item['id'],
-            'item_price' => (int) $item['price'],
-            'item_created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
-            'item_updated_at' => (new \DateTime($item['updated_at']))->getTImestamp(),
+            'item_id' => (int)$item['id'],
+            'item_price' => (int)$item['price'],
+            'item_created_at' => (new DateTime($item['created_at']))->getTimestamp(),
+            'item_updated_at' => (new DateTime($item['updated_at']))->getTImestamp(),
         ]);
     }
 
@@ -1198,7 +1199,7 @@ class Service
             $r = $sth->execute([
                 $buyer['id'],
                 self::ITEM_STATUS_TRADING,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $item['id'],
             ]);
             if ($r === false) {
@@ -1240,12 +1241,12 @@ class Service
                     $host . '/token',
                     [
                         'json' => [
-                        'shop_id' => self::PAYMENT_SERVICE_ISUCARI_SHOP_ID,
-                        'api_key' => self::PAYMENT_SERVICE_ISUCARI_API_KEY,
-                        'token' => $payload->token,
-                        'price' => $item['price'],
-                    ],
-                    'headers' => ['User-Agent' => self::HTTP_USER_AGENT],]
+                            'shop_id' => self::PAYMENT_SERVICE_ISUCARI_SHOP_ID,
+                            'api_key' => self::PAYMENT_SERVICE_ISUCARI_API_KEY,
+                            'token' => $payload->token,
+                            'price' => $item['price'],
+                        ],
+                        'headers' => ['User-Agent' => self::HTTP_USER_AGENT],]
                 );
             } catch (RequestException $e) {
                 $this->dbh->rollBack();
@@ -1423,7 +1424,7 @@ class Service
             $r = $sth->execute([
                 self::SHIPPING_STATUS_WAIT_PICKUP,
                 $res->getBody()->getContents(),
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $transactionEvidence['id']
             ]);
             if ($r === false) {
@@ -1552,7 +1553,7 @@ class Service
             $sth = $this->dbh->prepare('UPDATE `shippings` SET `status` = ?, `updated_at` = ? WHERE `transaction_evidence_id` = ?');
             $r = $sth->execute([
                 $shippingResponse->status,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $transactionEvidence['id'],
             ]);
             if ($r === false) {
@@ -1562,7 +1563,7 @@ class Service
             $sth = $this->dbh->prepare('UPDATE `transaction_evidences` SET `status` = ?, `updated_at` = ? WHERE `id` = ?');
             $r = $sth->execute([
                 self::TRANSACTION_EVIDENCE_STATUS_WAIT_DONE,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $transactionEvidence['id'],
             ]);
             if ($r === false) {
@@ -1688,7 +1689,7 @@ class Service
             $sth = $this->dbh->prepare('UPDATE `shippings` SET `status` = ?, `updated_at` = ? WHERE `transaction_evidence_id` = ?');
             $r = $sth->execute([
                 self::SHIPPING_STATUS_DONE,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $transactionEvidence['id'],
             ]);
             if ($r === false) {
@@ -1698,7 +1699,7 @@ class Service
             $sth = $this->dbh->prepare('UPDATE `transaction_evidences` SET `status` = ?, `updated_at` = ? WHERE `id` = ?');
             $r = $sth->execute([
                 self::TRANSACTION_EVIDENCE_STATUS_DONE,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $transactionEvidence['id'],
             ]);
             if ($r === false) {
@@ -1708,7 +1709,7 @@ class Service
             $sth = $this->dbh->prepare('UPDATE `items` SET `status` = ?, `updated_at` = ? WHERE `id` = ?');
             $r = $sth->execute([
                 self::ITEM_STATUS_SOLD_OUT,
-                (new \DateTime())->format(self::DATETIME_SQL_FORMAT),
+                (new DateTime())->format(self::DATETIME_SQL_FORMAT),
                 $item['id'],
             ]);
             if ($r === false) {
@@ -1777,8 +1778,8 @@ class Service
             }
 
             // last_bump + 3s > now
-            $now = new \DateTime();
-            if ((new \DateTime($seller['last_bump']))->getTimestamp() + self::BUMP_CHARGE_SECONDS > $now->getTimestamp()) {
+            $now = new DateTime();
+            if ((new DateTime($seller['last_bump']))->getTimestamp() + self::BUMP_CHARGE_SECONDS > $now->getTimestamp()) {
                 $this->dbh->rollBack();
                 return $response->withStatus(StatusCode::HTTP_FORBIDDEN)->withJson(['error' => 'Bump not allowed']);
             }
@@ -1816,10 +1817,10 @@ class Service
         }
 
         return $response->withStatus(StatusCode::HTTP_OK)->withJson([
-            'item_id' => (int) $item['id'],
-            'item_price' => (int) $item['price'],
-            'item_created_at' => (new \DateTime($item['created_at']))->getTimestamp(),
-            'item_updated_at' => (new \DateTime($item['updated_at']))->getTimestamp(),
+            'item_id' => (int)$item['id'],
+            'item_price' => (int)$item['price'],
+            'item_created_at' => (new DateTime($item['created_at']))->getTimestamp(),
+            'item_updated_at' => (new DateTime($item['updated_at']))->getTimestamp(),
         ]);
     }
 

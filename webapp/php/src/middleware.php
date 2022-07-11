@@ -2,7 +2,7 @@
 
 use Slim\App;
 use Slim\Http\Request;
-use Slim\Http\Response;
+use App\Polyfill\Response;
 
 return function (App $app) {
     // session
