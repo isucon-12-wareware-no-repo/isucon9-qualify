@@ -1,10 +1,13 @@
 <?php
 
+use DI\ContainerBuilder;
+use Slim\Factory\AppFactory;
+
 require __DIR__ . '/../vendor/autoload.php';
 
 // for the PHP build-in http server to serve static file
 if (PHP_SAPI == 'cli-server') {
-    if ($_SERVER['SCRIPT_NAME'] !== '/index.php' ) {
+    if ($_SERVER['SCRIPT_NAME'] !== '/index.php') {
         $_SERVER['REQUEST_URI'] = '/index.php' . $_SERVER['SCRIPT_NAME'];
         $_SERVER['SCRIPT_NAME'] = '/index.php';
     }
@@ -14,17 +17,28 @@ if (PHP_SAPI == 'cli-server') {
 error_reporting(E_ALL);
 set_error_handler(function ($severity, $message, $file, $line) {
     if (error_reporting() & $severity) {
-        throw new \ErrorException($message, 0, $severity, $file, $line);
+        throw new ErrorException($message, 0, $severity, $file, $line);
     }
 });
 
+
+// Instantiate PHP-DI ContainerBuilder
+$containerBuilder = new ContainerBuilder();
+
 // Instantiate the app
 $settings = require __DIR__ . '/../src/settings.php';
-$app = new \Slim\App($settings);
+$settings($containerBuilder);
+
 
 // Set up dependencies
 $dependencies = require __DIR__ . '/../src/dependencies.php';
-$dependencies($app);
+$dependencies($containerBuilder);
+
+$container = $containerBuilder->build();
+
+// Instantiate the app
+AppFactory::setContainer($container);
+$app = AppFactory::create();
 
 // Register middleware
 $middleware = require __DIR__ . '/../src/middleware.php';
