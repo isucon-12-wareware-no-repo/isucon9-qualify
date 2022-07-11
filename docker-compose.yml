@@ -22,12 +22,12 @@ services:
     image: mysql:5.7
     volumes:
       - ./webapp/sql:/docker-entrypoint-initdb.d
-      - ./webapp/sql/conf:/etc/mysql/conf.d
+      - ./webapp/sql/conf/my.cnf:/etc/mysql/my.cnf
       - ./datadir:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=isucari
       - MYSQL_HOST=127.0.0.1
       - MYSQL_USER=root
-      - MYSQL_PASS=secret
+      - MYSQL_ROOT_PASSWORD=secret
     ports:
       - "3306:3306"
