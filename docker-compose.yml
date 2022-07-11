@@ -1,0 +1,33 @@
+version: '3'
+services:
+  php:
+    build: ./webapp/php
+    volumes:
+      - ./webapp/php:/app
+      - ./webapp/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_PASS=secret
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "9100:80"
+    volumes:
+      - ./webapp/php/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./webapp/public:/var/www/html
+    depends_on:
+      - php
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./webapp/sql:/docker-entrypoint-initdb.d
+      - ./webapp/sql/conf:/etc/mysql/conf.d
+      - ./datadir:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_USER=root
+      - MYSQL_PASS=secret
+    ports:
+      - "3306:3306"
